@@ -7,7 +7,7 @@ import { ScalarRender } from './scalar'
 import { filterPaths, registerSchemaPath } from './utils'
 
 import type { OpenAPIV3 } from 'openapi-types'
-import type { ReferenceConfiguration } from '@scalar/types'
+import type { ApiReferenceConfigurationWithSources } from '@scalar/types/api-reference' with { "resolution-mode": "import" };
 import type { ElysiaSwaggerConfig } from './types'
 
 /**
@@ -82,14 +82,11 @@ export const swagger = async <Path extends string = '/swagger'>(
 			}
 		)
 
-		const scalarConfiguration: ReferenceConfiguration = {
-			spec: {
-				...scalarConfig.spec,
-				url: `${new URL(request.url).pathname.replace(/\/$/, "")}/json`
-			},
+		const scalarConfiguration: Partial<ApiReferenceConfigurationWithSources> = {
+			sources: [{url: `${new URL(request.url).pathname.replace(/\/$/, "")}/json` }],
+			// allow scalarConfig to override sources if they want to define more than one
 			...scalarConfig,
 			// so we can showcase the elysia theme
-			// @ts-expect-error
 			_integration: 'elysiajs'
 		}
 
